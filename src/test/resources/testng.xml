@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="MHRS Project" parallel="tests" thread-count="2">
+    <parameter name="browser"  value="chrome"/>
+    <test name="MHRS" >
+        <classes>
+            <class name="testRunners.Runner"/>
+        </classes>
+    </test>
+
+    <test name="Failed Scenarios Tests">
+        <classes>
+            <class name="testRunners.FailedScenariosRunner"/>
+        </classes>
+    </test>
+</suite>
