@@ -7,9 +7,9 @@ Feature: MHRS Appointment Booking
      And Select city "<city>"
      And Optionally select district "<district>"
      And Select clinic "<clinic>"
-     And Select hospital "<hospital>"
+     And Optionally select hospital "<hospital>"
      And Optionally select exam place "<examPlace>"
-     And Select doctor "<doctor>"
+     And Optionally select doctor "<doctor>"
      And Select a slot between "<startTime>" and "<endTime>"
      And Confirm appointment
      Then Verify appointment confirmation
