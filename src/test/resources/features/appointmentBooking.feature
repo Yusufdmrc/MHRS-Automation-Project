@@ -2,7 +2,7 @@
 Feature: MHRS Appointment Booking
 
   @BookAppointment @LoginRequired
-    Scenario Outline: Scenario Outline: Book appointment for a clinic with doctor and time slot
+    Scenario Outline: Book appointment for a clinic with doctor and time slot
      When User opens appointment flow
      And Select city "<city>"
      And Optionally select district "<district>"

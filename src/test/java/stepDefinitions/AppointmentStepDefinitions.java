@@ -31,7 +31,7 @@ public class AppointmentStepDefinitions {
         appointmentPage.selectClinic(clinic);
     }
 
-    @And("Select hospital {string}")
+    @And("Optionally select hospital {string}")
     public void optionallySelectHospital(String hospital) {
         appointmentPage.selectHospitalIfProvided(hospital);
     }
@@ -41,7 +41,7 @@ public class AppointmentStepDefinitions {
         appointmentPage.selectExamPlaceIfProvided(examPlace);
     }
 
-    @And("Select doctor {string}")
+    @And("Optionally select doctor {string}")
     public void selectDoctor(String doctor) {
         appointmentPage.selectDoctorIfProvided(doctor);
     }
