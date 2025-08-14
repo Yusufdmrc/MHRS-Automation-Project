@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import utils.ConfigReader;
@@ -14,6 +15,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 public class AppointmentPage {
 
@@ -21,45 +23,50 @@ public class AppointmentPage {
     WebDriverWait wait;
     ElementHelper elementHelper;
 
+    // ==== ELEMENTLER ====
     @FindBy(xpath = "//h3[normalize-space()='Hastane Randevusu Al']")
     WebElement appointmentButton;
 
     @FindBy(xpath = "//button[@class='ant-btn randevu-turu-button genel-arama-button ant-btn-lg']")
     WebElement generalSearchButton;
 
-    @FindBy(xpath = "//span[text()='İl Seçiniz']")
+    @FindBy(xpath = "//span[contains(text(),'İl Seçiniz')]")
     WebElement cityInput;
 
-    @FindBy(xpath = "//div[text()='-FARK ETMEZ-']")
+    @FindBy(xpath = "//span[contains(text(),'İlçe Seçiniz')]")
     WebElement districtInput;
 
-    @FindBy(xpath = "//span[text()='Klinik Seçiniz']")
+    @FindBy(xpath = "//span[contains(text(),'Klinik Seçiniz')]")
     WebElement clinicInput;
 
-    @FindBy(css = "span[id='hastane-tree-select'] span[class='ant-select-selection__placeholder']")
+    @FindBy(xpath = "//span[contains(text(),'Hastane Seçiniz')]")
     WebElement hospitalInput;
 
-    @FindBy(css = "span[id='muayeneYeri-tree-select'] span[class='ant-select-selection__placeholder']")
+    @FindBy(xpath = "//span[contains(text(),'Muayene Yeri Seçiniz')]")
     WebElement examPlaceInput;
 
-    @FindBy(css = "span[id='hekim-tree-select'] span[class='ant-select-selection__placeholder']")
+    @FindBy(xpath = "//span[contains(text(),'Hekim Seçiniz')]")
     WebElement doctorInput;
 
-    @FindBy(id ="randevuAramaForm_baslangicZamani")
+    @FindBy(id = "randevuAramaForm_baslangicZamani")
     WebElement startTimeInput;
 
-    @FindBy(id="randevuAramaForm_bitisZamani")
+    @FindBy(id = "randevuAramaForm_bitisZamani")
     WebElement endTimeInput;
 
     @FindBy(css = ".available-slots button")
     List<WebElement> availableSlots;
 
-    @FindBy(css = "button[data-testid='confirm-appointment']")
+    @FindBy(xpath = "//button[contains(.,'Randevu Ara')]")
+    WebElement searchAppointmentButton;
+
+    @FindBy(xpath = "//button[contains(@data-testid,'confirm-appointment')]")
     WebElement confirmButton;
 
     @FindBy(css = ".confirmation-message")
     WebElement confirmationMessage;
 
+    // ==== CONSTRUCTOR ====
     public AppointmentPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getInt("explicit.wait")));
@@ -67,54 +74,59 @@ public class AppointmentPage {
         PageFactory.initElements(driver, this);
     }
 
+    // ==== GENEL DROPDOWN SEÇME METODU (Türkçe karakter destekli) ====
+    private void selectFromDropdown(WebElement dropdownTrigger, String optionText) {
+        if (optionText == null || optionText.trim().isEmpty() || optionText.equalsIgnoreCase("SKIP")) {
+            return; // Opsiyonel alan boş bırakılmış
+        }
+
+        elementHelper.click(dropdownTrigger);
+
+        // Açılan dropdown container'ı bekle
+        By visibleDropdown = By.xpath("//div[contains(@class,'ant-select-dropdown') and not(contains(@style,'display: none'))]");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(visibleDropdown));
+
+        // TR locale ile büyük harfe çevir
+        String normalized = optionText.trim().toUpperCase(new Locale("tr", "TR"));
+
+        // İstenen seçeneği bekle ve tıkla
+        By optionLocator = By.xpath(
+                "//div[contains(@class,'ant-select-dropdown') and not(contains(@style,'display: none'))]" +
+                        "//li[normalize-space()='" + normalized + "']"
+        );
+
+        WebElement optionElement = wait.until(ExpectedConditions.elementToBeClickable(optionLocator));
+        optionElement.click();
+    }
+
+    // ==== ADIM METOTLARI ====
     public void openAppointmentFlow() {
         elementHelper.click(appointmentButton);
+        elementHelper.click(generalSearchButton);
     }
 
     public void selectCity(String city) {
-        if (!"SKIP".equals(city)) {
-            elementHelper.click(cityInput);
-            WebElement cityOption = driver.findElement(By.xpath("//li[text()='" + city + "']"));
-            elementHelper.click(cityOption);
-        }
+        selectFromDropdown(cityInput, city); // Zorunlu alan
     }
 
     public void selectDistrictIfProvided(String district) {
-        if (!"SKIP".equals(district)) {
-            elementHelper.click(districtInput);
-            WebElement districtOption = driver.findElement(By.xpath("//li[text()='" + district + "']"));
-            elementHelper.click(districtOption);
-        }
+        selectFromDropdown(districtInput, district); // Opsiyonel
     }
 
     public void selectClinic(String clinic) {
-        elementHelper.click(clinicInput);
-        WebElement clinicOption = driver.findElement(By.xpath("//li[text()='" + clinic + "']"));
-        elementHelper.click(clinicOption);
+        selectFromDropdown(clinicInput, clinic); // Zorunlu
     }
 
     public void selectHospitalIfProvided(String hospital) {
-        if (!"SKIP".equals(hospital)) {
-            elementHelper.click(hospitalInput);
-            WebElement hospitalOption = driver.findElement(By.xpath("//li[text()='" + hospital + "']"));
-            elementHelper.click(hospitalOption);
-        }
+        selectFromDropdown(hospitalInput, hospital); // Opsiyonel
     }
 
     public void selectExamPlaceIfProvided(String examPlace) {
-        if (!"SKIP".equals(examPlace)) {
-            elementHelper.click(examPlaceInput);
-            WebElement examPlaceOption = driver.findElement(By.xpath("//li[text()='" + examPlace + "']"));
-            elementHelper.click(examPlaceOption);
-        }
+        selectFromDropdown(examPlaceInput, examPlace); // Opsiyonel
     }
 
     public void selectDoctorIfProvided(String doctor) {
-        if (!"SKIP".equals(doctor)) {
-            elementHelper.click(doctorInput);
-            WebElement doctorOption = driver.findElement(By.xpath("//li[text()='" + doctor + "']"));
-            elementHelper.click(doctorOption);
-        }
+        selectFromDropdown(doctorInput, doctor); // Opsiyonel
     }
 
     public void selectFirstAvailableSlotBetween(String startTime, String endTime) {
@@ -123,14 +135,19 @@ public class AppointmentPage {
         LocalTime end = LocalTime.parse(endTime, formatter);
 
         for (WebElement slot : availableSlots) {
-            String slotTime = slot.getText();
+            String slotTime = slot.getText().trim();
             LocalTime currentSlotTime = LocalTime.parse(slotTime, formatter);
 
-            if (currentSlotTime.isAfter(start) && currentSlotTime.isBefore(end)) {
+            if ((currentSlotTime.equals(start) || currentSlotTime.isAfter(start))
+                    && (currentSlotTime.equals(end) || currentSlotTime.isBefore(end))) {
                 elementHelper.click(slot);
                 break;
             }
         }
+    }
+
+    public void searchAppointments() {
+        elementHelper.click(searchAppointmentButton);
     }
 
     public void confirmAppointment() {

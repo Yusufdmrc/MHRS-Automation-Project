@@ -15,6 +15,6 @@ Feature: MHRS Appointment Booking
      Then Verify appointment confirmation
 
     Examples:
-      | city     | clinic                       | district | hospital                                   | examPlace | doctor           | startTime | endTime |
-      | İstanbul | Dahiliye (İç Hastalıkları)   | SKIP     | SKIP                                       | SKIP      | SKIP             | 09:00     | 12:00   |
-      | İstanbul | Dahiliye (İç Hastalıkları)   | Ümraniye | SBÜ Ümraniye Eğitim ve Araş. Hastanesi     | Poliklinik-2 | Dr. Ahmet Örnek | 13:00     | 16:00   |
+      | city              | clinic                     | district | hospital                                                  | examPlace                | doctor     | startTime | endTime |
+      | İSTANBUL(ANADOLU) | İç Hastalıkları (Dahiliye) | SKIP     | SKIP                                                      | SKIP                     | SKIP       | 09:00     | 12:00   |
+      | İstanbul          | Çocuk Kardiyolojisi        | PENDİK   | İSTANBUL- (ANADOLU)- PENDİK EĞİTİM VE ARAŞTIRMA HASTANESİ | Çocuk Aritmi Polikliniği | ELİF EROLU | 13:00     | 16:00   |
