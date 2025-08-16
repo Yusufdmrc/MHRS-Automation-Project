@@ -15,9 +15,15 @@ public class Hooks {
 
         driver = DriverFactory.initializeDriver(browser, testEnv);
 
+        if (sessionCookie == null) {
+            sessionCookie = CookieManager.loadCookie();
+        }
+
         if(sessionCookie != null){
+            driver.manage().deleteAllCookies();
             driver.manage().addCookie(sessionCookie);
             driver.navigate().refresh();
+            System.out.println("[INFO] Reused session cookie from file: " + sessionCookie.getName() + " = " + sessionCookie.getValue());
         }
     }
 
