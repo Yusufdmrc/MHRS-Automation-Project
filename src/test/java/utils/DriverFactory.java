@@ -14,7 +14,7 @@ import java.time.Duration;
 public class DriverFactory {
     static WebDriver driver;
 
-    public static WebDriver initializeDriver(String browser) {
+    public static WebDriver initializeDriver(String browser, String environment) {
 
         if (browser.equalsIgnoreCase("chrome")) {
             WebDriverManager.chromedriver().setup();

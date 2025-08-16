@@ -7,12 +7,18 @@ import pages.LoginPage;
 public class Hooks {
 
     WebDriver driver;
+    private static Cookie sessionCookie;
 
     private void initializeDriverAndHandleCookies() {
         String browser = System.getProperty("browser", "chrome");
         String testEnv = System.getProperty("testEnv", "test");
 
         driver = DriverFactory.initializeDriver(browser, testEnv);
+
+        if(sessionCookie != null){
+            driver.manage().addCookie(sessionCookie);
+            driver.navigate().refresh();
+        }
     }
 
     @Before(order = 1, value = "not @LoginRequired")
@@ -24,11 +30,21 @@ public class Hooks {
     public void beforeScenarioWithLogin() {
         initializeDriverAndHandleCookies();
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.login(
-                ConfigReader.get("correct.tc.id"),
-                ConfigReader.get("correct.password")
-        );
+        if(sessionCookie == null){
+            LoginPage loginPage = new LoginPage(driver);
+            loginPage.login(
+                    ConfigReader.get("correct.tc.id"),
+                    ConfigReader.get("correct.password")
+            );
+
+            for (Cookie c :driver.manage().getCookies()){
+                if(c.getName().toLowerCase().contains("SAGLIK01272506")){
+                    sessionCookie = c;
+                    System.out.println("Session Cookie: " + c.getName()  + " = " + c.getValue());
+                    break;
+                }
+            }
+        }
     }
 
     @AfterStep

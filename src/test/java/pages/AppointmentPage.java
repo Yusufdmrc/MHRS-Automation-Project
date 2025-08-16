@@ -23,7 +23,7 @@ public class AppointmentPage {
     WebDriverWait wait;
     ElementHelper elementHelper;
 
-    // ==== ELEMENTLER ====
+
     @FindBy(xpath = "//h3[normalize-space()='Hastane Randevusu Al']")
     WebElement appointmentButton;
 
